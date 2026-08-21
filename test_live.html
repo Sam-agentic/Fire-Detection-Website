@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Fire Detection Test</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: white; text-align: center; }
+        #status { font-size: 20px; margin: 10px; }
+        #video, #canvas { border: 2px solid #444; margin: 10px; }
+        .fire-alert { color: red; font-weight: bold; font-size: 24px; }
+        .safe { color: lightgreen; font-size: 24px; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Live Fire Detection — Test Page</h1>
+    <div id="status">Connecting...</div>
+    <div id="result" class="safe">Waiting for detection...</div>
+
+    <video id="video" width="480" height="360" autoplay muted></video>
+    <canvas id="canvas" width="480" height="360" style="display:none;"></canvas>
+    <img id="output" width="480" height="360" />
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const output = document.getElementById('output');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const ctx = canvas.getContext('2d');
+
+        // Step 1: Webcam access karna
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                statusDiv.innerText = "Webcam access nahi mil saka: " + err;
+            });
+
+        // Step 2: WebSocket connection banana
+        const ws = new WebSocket("ws://127.0.0.1:8000/api/detect/live");
+
+        ws.onopen = () => {
+            statusDiv.innerText = "Connected! Live detection shuru ho rahi hai...";
+            sendFrame();
+        };
+
+        ws.onerror = (err) => {
+            statusDiv.innerText = "WebSocket error - console check karein.";
+            console.error(err);
+        };
+
+        ws.onclose = () => {
+            statusDiv.innerText = "Connection band ho gayi.";
+        };
+
+        // Step 3: Har result aane par UI update karna
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            output.src = data.annotated_frame;
+            if (data.fire_detected) {
+                resultDiv.innerText = "🔥 FIRE DETECTED!";
+                resultDiv.className = "fire-alert";
+            } else {
+                resultDiv.innerText = "✅ Sab theek hai — koi fire nahi.";
+                resultDiv.className = "safe";
+            }
+            // Agla frame bhejna (thodi delay ke sath, taake server overload na ho)
+            setTimeout(sendFrame, 300);
+        };
+
+        // Step 4: Frame capture kar ke bhejna
+        function sendFrame() {
+            if (ws.readyState !== WebSocket.OPEN) return;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frameData = canvas.toDataURL('image/jpeg', 0.7);
+            ws.send(frameData);
+        }
+    </script>
+</body>
+</html>

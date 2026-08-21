@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0" />
+
+  <meta name="theme-color" content="#080a0d" />
+
+  <title>Sentinel — AI Fire Detection</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- =====================================================
+       BACKGROUND
+  ====================================================== -->
+
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="grid-background"></div>
+
+
+  <!-- =====================================================
+       SKELETON CREATURE
+  ====================================================== -->
+
+  <canvas id="creatureCanvas"></canvas>
+
+  <div id="creatureEmotion">
+    <span id="emotionText">...</span>
+  </div>
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header class="topbar">
+
+    <div class="brand">
+
+      <span class="brand-mark">🔥</span>
+
+      <span class="brand-name">
+        Sentinel
+      </span>
+
+    </div>
+
+    <nav class="topbar-status">
+
+      <span
+        class="status-dot"
+        id="apiStatusDot">
+      </span>
+
+      <span id="apiStatusText">
+        Checking system…
+      </span>
+
+    </nav>
+
+  </header>
+
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="hero">
+
+    <div class="mascot-wrap">
+
+      <div
+        class="mascot glass"
+        id="mascot">
+
+        <div
+          class="mascot-eye left"
+          id="eyeLeft">
+
+          <div class="pupil"></div>
+
+        </div>
+
+        <div
+          class="mascot-eye right"
+          id="eyeRight">
+
+          <div class="pupil"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <h1 class="hero-title">
+      Every flame, spotted<br>
+      the instant it appears.
+    </h1>
+
+
+    <p class="hero-sub">
+      Upload an image or video, or go live —
+      Sentinel watches the frame for fire and
+      smoke in real time.
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================
+       DETECTION PANEL
+  ====================================================== -->
+
+  <section
+    class="panel glass"
+    id="detectPanel">
+
+
+    <!-- TABS -->
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        data-tab="image">
+
+        Image
+
+      </button>
+
+
+      <button
+        class="tab"
+        data-tab="video">
+
+        Video
+
+      </button>
+
+
+      <button
+        class="tab"
+        data-tab="live">
+
+        Live Camera
+
+      </button>
+
+    </div>
+
+
+    <!-- ===================================================
+         IMAGE
+    ==================================================== -->
+
+    <div
+      class="tab-content active"
+      id="tab-image">
+
+
+      <label
+        class="dropzone"
+        id="dropzoneImage">
+
+        <input
+          type="file"
+          id="imageInput"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          hidden
+        />
+
+
+        <span class="dropzone-icon">
+          📷
+        </span>
+
+
+        <span class="dropzone-text">
+          Drop an image here or click to browse
+        </span>
+
+
+        <span class="dropzone-hint">
+          JPG, JPEG or PNG — up to 10MB
+        </span>
+
+      </label>
+
+
+      <div
+        class="results"
+        id="resultsImage"
+        hidden>
+
+
+        <div class="result-media">
+
+          <img
+            id="resultImageEl"
+            alt="AI detection result"
+          />
+
+        </div>
+
+
+        <div class="result-info">
+
+          <div
+            class="result-badge"
+            id="resultBadgeImage">
+
+            Analyzing…
+
+          </div>
+
+
+          <ul
+            class="result-detections"
+            id="resultDetectionsImage">
+          </ul>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         VIDEO
+    ==================================================== -->
+
+    <div
+      class="tab-content"
+      id="tab-video">
+
+
+      <label
+        class="dropzone"
+        id="dropzoneVideo">
+
+        <input
+          type="file"
+          id="videoInput"
+          accept=".mp4,.avi,.mov,video/mp4,video/quicktime,video/x-msvideo"
+          hidden
+        />
+
+
+        <span class="dropzone-icon">
+          🎬
+        </span>
+
+
+        <span class="dropzone-text">
+          Drop a video here or click to browse
+        </span>
+
+
+        <span class="dropzone-hint">
+          MP4, AVI or MOV — up to 10MB
+        </span>
+
+      </label>
+
+
+      <div
+        class="results"
+        id="resultsVideo"
+        hidden>
+
+
+        <div class="result-media">
+
+          <video
+            id="resultVideoEl"
+            controls
+            playsinline>
+          </video>
+
+        </div>
+
+
+        <div class="result-info">
+
+          <div
+            class="result-badge"
+            id="resultBadgeVideo">
+
+            Analyzing…
+
+          </div>
+
+
+          <ul
+            class="result-detections"
+            id="resultDetectionsVideo">
+          </ul>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         LIVE CAMERA
+    ==================================================== -->
+
+    <div
+      class="tab-content"
+      id="tab-live">
+
+
+      <div class="live-stage">
+
+        <video
+          id="liveVideo"
+          autoplay
+          muted
+          playsinline>
+        </video>
+
+
+        <canvas
+          id="liveCanvas"
+          hidden>
+        </canvas>
+
+
+        <img
+          id="liveOutput"
+          alt="Live detection output"
+        />
+
+
+        <div
+          class="live-alert"
+          id="liveAlert">
+
+          Camera off
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn-primary"
+        id="liveToggleBtn">
+
+        Start Live Detection
+
+      </button>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+      class="loading"
+      id="loadingState"
+      hidden>
+
+      <div class="spinner"></div>
+
+      <span>
+        Analyzing frame…
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <footer class="footer">
+
+    <span>
+      Sentinel Fire Detection —
+      local inference, private by default.
+    </span>
+
+  </footer>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
