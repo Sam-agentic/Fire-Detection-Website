@@ -19,7 +19,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Jab frontend ready ho jaye to isko specific URL tak limit kar dena (security ke liye)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500", "https://adorable-basbousa-67c894.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
