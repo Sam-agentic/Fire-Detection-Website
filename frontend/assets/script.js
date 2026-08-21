@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
      1. CONFIGURATION
   ========================================================== */
 
-  const API_BASE = "http://127.0.0.1:8000";
+  const API_BASE = "https://fire-detection-website-production.up.railway.app";
 
   const API_KEY =
     "your-secret-key-change-this-later";
