@@ -46,7 +46,7 @@ async def root():
         "status": "online",
         "message": "Fire Detection API chal rahi hai! 🔥",
     }
-    import os
+import os
 import uvicorn
 
 if __name__ == "__main__":
